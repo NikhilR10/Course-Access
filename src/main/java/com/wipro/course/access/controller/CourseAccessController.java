@@ -34,7 +34,7 @@ public class CourseAccessController {
 		return courseAccessService.viewCourseVideos(id);
 	}
 	
-	@GetMapping("/courses/videos")
+	@GetMapping("/courses/video/watch")
 	public ResponseEntity<?> viewVideo(@RequestParam("videoId")Integer id, HttpServletRequest request){
 		String userId = request.getHeader("user_id");
 		return courseAccessService.viewVideo(id, userId);

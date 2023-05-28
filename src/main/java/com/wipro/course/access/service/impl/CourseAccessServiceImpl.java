@@ -23,13 +23,13 @@ public class CourseAccessServiceImpl implements CourseAccessService {
 
 	@Autowired
 	private CourseRepository courseRepository;
-	
+
 	@Autowired
 	private CourseVideosRepository courseVideoRepository;
 
 	@Autowired
 	private ObjectMapper mapper;
-	
+
 	private static final String USER_DIRECTORY = "user.dir";
 	private static final String FILE_SEPARATOR = "\\";
 
@@ -66,38 +66,39 @@ public class CourseAccessServiceImpl implements CourseAccessService {
 	@Override
 	public ResponseEntity<String> viewCourseVideos(Integer courseId) {
 		try {
-		Optional<Course> course = courseRepository.findById(courseId);
-		List<CourseVideos> response = new ArrayList<>();
-		if (course.isPresent()) {
-			List<CourseVideos> videos = courseVideoRepository.findByCourseId(course.get());
-			videos.forEach(video -> {
-				CourseVideos v = new CourseVideos();
-				v.setId(video.getId());
-				v.setFileName(video.getFileName());
-				response.add(v);
-			});
-			return new ResponseEntity<>(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response),
-					HttpStatus.OK);
-		}
-		return new ResponseEntity<>("No videos are available", HttpStatus.NOT_FOUND);
+			Optional<Course> course = courseRepository.findById(courseId);
+			List<CourseVideos> response = new ArrayList<>();
+			if (course.isPresent()) {
+				List<CourseVideos> videos = courseVideoRepository.findByCourseId(course.get());
+				videos.forEach(video -> {
+					CourseVideos v = new CourseVideos();
+					v.setId(video.getId());
+					v.setFileName(video.getFileName());
+					response.add(v);
+				});
+				return new ResponseEntity<>(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response),
+						HttpStatus.OK);
+			}
+			return new ResponseEntity<>("No videos are available", HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
 			return new ResponseEntity<>("An error has occurred! Please try again", HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
 	public ResponseEntity<byte[]> viewVideo(Integer videoId, String userId) {
 		try {
-		Optional<CourseVideos> video = courseVideoRepository.findById(videoId);
-		if (video.isPresent()) {
-			String videoPath = new File(System.getProperty(USER_DIRECTORY)).getParent() + FILE_SEPARATOR
-					+ "Course Videos" + FILE_SEPARATOR + userId + FILE_SEPARATOR + video.get().getCourseId().getName()
-					+ FILE_SEPARATOR + video.get().getFileName();
-			return new ResponseEntity<>(Files.readAllBytes(new File(videoPath).toPath()), HttpStatus.OK);
-		}
-		return new ResponseEntity<>(new byte[0], HttpStatus.NOT_FOUND);
+			Optional<CourseVideos> video = courseVideoRepository.findById(videoId);
+			if (video.isPresent()) {
+				String videoPath = new File(System.getProperty(USER_DIRECTORY)).getParent() + FILE_SEPARATOR
+						+ "Course Videos" + FILE_SEPARATOR + userId + FILE_SEPARATOR
+						+ video.get().getCourseId().getName() + FILE_SEPARATOR + video.get().getFileName();
+				return ResponseEntity.status(HttpStatus.OK).header("Content-Type", "video/mp4")
+						.header("Accept-Ranges", "bytes").body(Files.readAllBytes(new File(videoPath).toPath()));
+			}
+			return new ResponseEntity<>(new byte[0], HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(new byte[0], HttpStatus.BAD_REQUEST);
 		}
 	}
-
 }
