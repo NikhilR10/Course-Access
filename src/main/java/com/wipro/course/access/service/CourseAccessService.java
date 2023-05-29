@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import com.wipro.course.access.entity.Course;
+import com.wipro.course.access.entity.UserCourses;
 
 public interface CourseAccessService {
 	
@@ -14,5 +15,7 @@ public interface CourseAccessService {
 	
 	ResponseEntity<String> viewCourseVideos(Integer courseId);
 	
-	public ResponseEntity<byte[]> viewVideo(Integer videoId, String userId);
+	ResponseEntity<byte[]> viewVideo(Integer videoId, String userId);
+	
+	ResponseEntity<List<UserCourses>> getAllUserCourses(String userId);
 }

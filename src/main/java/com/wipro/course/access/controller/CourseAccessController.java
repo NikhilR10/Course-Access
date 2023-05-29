@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wipro.course.access.entity.Course;
+import com.wipro.course.access.entity.UserCourses;
 import com.wipro.course.access.service.CourseAccessService;
 
 @RestController
@@ -34,9 +35,15 @@ public class CourseAccessController {
 		return courseAccessService.viewCourseVideos(id);
 	}
 	
+	@GetMapping("/courses/user")
+	public ResponseEntity<List<UserCourses>> viewUserCourses(HttpServletRequest request){
+		String userId = request.getHeader("user_name");
+		return courseAccessService.getAllUserCourses(userId);
+	}
+	
 	@GetMapping("/courses/video/watch")
 	public ResponseEntity<?> viewVideo(@RequestParam("videoId")Integer id, HttpServletRequest request){
-		String userId = request.getHeader("user_id");
+		String userId = request.getHeader("user_name");
 		return courseAccessService.viewVideo(id, userId);
 	}
 }

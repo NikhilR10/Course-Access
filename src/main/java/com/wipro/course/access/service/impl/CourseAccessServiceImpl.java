@@ -14,8 +14,11 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wipro.course.access.entity.Course;
 import com.wipro.course.access.entity.CourseVideos;
+import com.wipro.course.access.entity.User;
+import com.wipro.course.access.entity.UserCourses;
 import com.wipro.course.access.repository.CourseRepository;
 import com.wipro.course.access.repository.CourseVideosRepository;
+import com.wipro.course.access.repository.UserCoursesRepository;
 import com.wipro.course.access.service.CourseAccessService;
 
 @Service
@@ -26,6 +29,9 @@ public class CourseAccessServiceImpl implements CourseAccessService {
 
 	@Autowired
 	private CourseVideosRepository courseVideoRepository;
+	
+	@Autowired
+	private UserCoursesRepository userCourseRepository;
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -100,5 +106,12 @@ public class CourseAccessServiceImpl implements CourseAccessService {
 			e.printStackTrace();
 			return new ResponseEntity<>(new byte[0], HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	@Override
+	public ResponseEntity<List<UserCourses>> getAllUserCourses(String userId) {
+		User user = new User();
+		user.setUserName(userId);
+		return new ResponseEntity<>(userCourseRepository.findByUserNameAndPaymentStatus(user, "PAID"), HttpStatus.OK);
 	}
 }
